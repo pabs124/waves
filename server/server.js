@@ -96,6 +96,7 @@ app.get('/api/product/articles_by_id', (req, res) => {
     populate('brand').
     populate('wood').
     exec((err, docs)=> {
+        if(err) return res.status(400).send(err)
         return res.status(200).send(docs)
     })
 })
@@ -145,9 +146,11 @@ app.post('/api/users/register', (req, res) => {
 
 app.post('/api/users/login', (req, res) => {
     User.findOne({'email': req.body.email}, (err, user)=> {
+        if(err) return res.status(400).send(err)
         if(!user) return res.json({loginSuccess: false, message:'Auth failed, email not found'})
         
         user.comparePassword(req.body.password, (err, isMatch)=> {
+            if(err) return res.status(400).send(err)
             if(!isMatch) return res.json({loginSuccess: false, message:'Wrong Password'})
             
             user.generateToken((err, user)=> {
